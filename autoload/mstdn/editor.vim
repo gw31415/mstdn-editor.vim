@@ -1,8 +1,8 @@
-function mstdn#open_editor(bufnr = bufnr()) abort
-	let user = mstdn#timeline#user(a:bufnr)
-	exe '4new mstdn-editor://' .. user
+function mstdn#editor#open(user) abort
+	exe g:mstdn_editor_opener
+	exe 'f mstdneditor://' .. a:user
 	setl bt=acwrite bufhidden=wipe noswapfile
-	let b:mstdn_user = user
+	let b:mstdn_editing_user = a:user
 	autocmd BufWriteCmd <buffer> call s:send(str2nr(expand('<abuf>')))
 	nn <buffer> <esc> <cmd>sil! q<cr>
 endfunction
@@ -13,7 +13,7 @@ function s:send(edbufnr) abort
 		echoerr 'Content is empty.'
 		return
 	endif
-	call mstdn#request#post(getbufvar(a:edbufnr, 'mstdn_user'), #{status: text})
+	call mstdn#request#post(getbufvar(a:edbufnr, 'mstdn_editing_user'), #{status: text})
 	let old_undolevels = getbufvar(a:edbufnr, '&undolevels')
 	call setbufvar(a:edbufnr, '&undolevels', -1)
 	sil! %d _
