@@ -1,22 +1,20 @@
 let s:file_prefix = 'mstdn-editor:'
 let s:prefix_len = len(s:file_prefix)
+let s:buffer_defaults = {}
 
 " open editor buffer
 function mstdn#editor#open(user, opts = {}) abort
-	let opts = extend(#{ opener: g:mstdn_editor_opener, defaults: #{} }, a:opts)
+	let opts = extend(#{opener: g:mstdn_editor_opener, defaults: {}}, a:opts)
 	exe opts.opener
 	setl bt=acwrite bufhidden=wipe noswapfile
 	call s:set_user(a:user)
+	let s:buffer_defaults[bufnr()] = opts.defaults
 
-	" Insert default status
-	let b:mstdn_editing_status = opts.defaults
-	let text = v:null
-	if has_key(b:mstdn_editing_status, 'status')
-		let text = remove(b:mstdn_editing_status, 'status')
-	endif
-	call s:init_buftxt(bufnr(), text)
+	" initialize buffer
+	call s:initialize(bufnr())
 
 	autocmd BufWriteCmd <buffer> call s:send(str2nr(expand('<abuf>')))
+	autocmd BufWipeout <buffer> call remove(s:buffer_defaults, str2nr(expand('<abuf>')))
 	nn <buffer> <esc> <cmd>sil! q<cr>
 endfunction
 
@@ -36,16 +34,20 @@ function s:send(edbufnr) abort
 	endif
 	let b:mstdn_editing_status.status = text
 	call mstdn#request#post(strpart(bufname(a:edbufnr), s:prefix_len), b:mstdn_editing_status)
-	call s:init_buftxt(a:edbufnr)
+
+	" re-initialize buffer
+	call s:initialize(a:edbufnr)
 endfunction
 
 " initialize buffer text
-function s:init_buftxt(bufnr, text = v:null) abort
+function s:initialize(bufnr) abort
+	let b:mstdn_editing_status = copy(get(s:buffer_defaults, a:bufnr, {}))
+
 	let old_undolevels = getbufvar(a:bufnr, '&undolevels')
 	call setbufvar(a:bufnr, '&undolevels', -1)
 	sil! %d _
-	if a:text != v:null
-		call setbufline(a:bufnr, 1, split(a:text, '\n'))
+	if has_key(b:mstdn_editing_status, 'status')
+		call setbufline(a:bufnr, 1, split(remove(b:mstdn_editing_status, 'status'), '\n'))
 	endif
 	call setbufvar(a:bufnr, '&undolevels', old_undolevels)
 	call setbufvar(a:bufnr, '&modified', 0)
