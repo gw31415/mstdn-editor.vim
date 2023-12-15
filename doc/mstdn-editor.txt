@@ -47,7 +47,7 @@ VARIABLES                                                    *mstdn-editor-vars*
 
 *g:mstdn_editor_defaultuser*
 
-        the user string to be selected by default when |<Plug>(mstdn-editor-open)|
+        The user string to be selected by default when |<Plug>(mstdn-editor-open)|
         is pressed and the buffer you are on is not a timeline. Default is
         |v:null|.
 
