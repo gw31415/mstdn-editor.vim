@@ -14,7 +14,7 @@ USAGE                                                       *mstdn-editor-usage*
 ==============================================================================
 KEYBINDINGS                                                  *mstdn-editor-keys*
 
-<Plug>(mstdn-editor-open)
+<Plug>(mstdn-editor-open)                            *<Plug>(mstdn-editor-open)*
 
         Open editor window according to the current window.
 
@@ -44,6 +44,12 @@ VARIABLES                                                    *mstdn-editor-vars*
 *g:mstdn_editor_opener*
 
         Command used to open the windows. Default is `4new`.
+
+*g:mstdn_editor_defaultuser*
+
+        the user string to be selected by default when |<Plug>(mstdn-editor-open)|
+        is pressed and the buffer you are on is not a timeline. Default is
+        |v:null|.
 
 ==============================================================================
 vim:tw=100:ts=8:ft=help:norl:
