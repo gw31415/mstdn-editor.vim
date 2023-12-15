@@ -1,0 +1,49 @@
+==============================================================================
+*mstdn-editor.txt*                           Editor-window opener for mstdn.vim.
+
+MSTDN-EDITOR.VIM                                              *mstdn-editor.vim*
+
+Editor-window opener for |mstdn.vim|.
+
+==============================================================================
+USAGE                                                       *mstdn-editor-usage*
+
+    Open the window in the manner described below, edit the content, and send
+    it with |:w|, |ZZ| or other similar commands.
+
+==============================================================================
+KEYBINDINGS                                                  *mstdn-editor-keys*
+
+<Plug>(mstdn-editor-open)
+
+        Open editor window according to the current window.
+
+==============================================================================
+FUNCTIONS                                                   *mstdn-editor-funcs*
+
+mstdn#editor#open({user}, {opts} = {})                     *mstdn#editor#open()*
+
+        Open editor window with specified user and options.
+
+        {user}      (string) User string formatted as `[username]@[serveraddr]`.
+        {opts}      (dict) Additional options
+                        - opener: (string|null) Command used to open the
+                          windows.
+                        - defaults: (dict) Initialization state of
+                          CreateStatusParams to be edited.
+
+mstdn#editor#set_user({user})                          *mstdn#editor#set_user()*
+
+        Change editing user of the current editor window.
+
+        {user}      (string) User string formatted as `[username]@[serveraddr]`.
+
+==============================================================================
+VARIABLES                                                    *mstdn-editor-vars*
+
+*g:mstdn_editor_opener*
+
+        Command used to open the windows. Default is `4new`.
+
+==============================================================================
+vim:tw=100:ts=8:ft=help:norl:

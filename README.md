@@ -11,6 +11,7 @@ with `:w`, `ZZ` or etc.
 Read [this](https://github.com/gw31415/mstdn.vim#installation--config-example).
 
 ## API
+For more information, read the [doc](./doc/mstdn-editor.txt).
 
 ### Keybinding(s)
 
