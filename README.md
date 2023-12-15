@@ -2,7 +2,7 @@
 
 Editor-window opener for [mstdn.vim](https://github.com/gw31415/mstdn.vim).
 
-![output](https://github.com/gw31415/mstdn-editor.vim/assets/24710985/9ab859fe-1624-4589-a75b-265167f67f62)
+![output](https://github.com/gw31415/mstdn-editor.vim/assets/24710985/20971b06-93ce-4dbe-ba3f-7ba75e4a24de)
 
 ## Usage
 
