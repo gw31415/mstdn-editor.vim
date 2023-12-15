@@ -2,9 +2,11 @@
 
 Editor-window opener for [mstdn.vim](https://github.com/gw31415/mstdn.vim).
 
+![output](https://github.com/gw31415/mstdn-editor.vim/assets/24710985/20971b06-93ce-4dbe-ba3f-7ba75e4a24de)
+
 ## Usage
 
-Open the window in the manner described below, edit the content, and send it
+Use the API and open the window, edit the content, and send it
 with `:w`, `ZZ` or etc.
 
 ## Installation
