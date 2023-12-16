@@ -42,15 +42,15 @@ function s:send(edbufnr) abort
 endfunction
 
 " initialize buffer text
-function s:initialize(bufnr) abort
-	let b:mstdn_editing_status = copy(get(s:buffer_defaults, a:bufnr, {}))
+function s:initialize(edbufnr) abort
+	let b:mstdn_editing_status = copy(get(s:buffer_defaults, a:edbufnr, {}))
 
-	let old_undolevels = getbufvar(a:bufnr, '&undolevels')
-	call setbufvar(a:bufnr, '&undolevels', -1)
+	let old_undolevels = getbufvar(a:edbufnr, '&undolevels')
+	call setbufvar(a:edbufnr, '&undolevels', -1)
 	sil! %d _
 	if has_key(b:mstdn_editing_status, 'status')
-		call setbufline(a:bufnr, 1, split(remove(b:mstdn_editing_status, 'status'), '\n'))
+		call setbufline(a:edbufnr, 1, split(remove(b:mstdn_editing_status, 'status'), '\n'))
 	endif
-	call setbufvar(a:bufnr, '&undolevels', old_undolevels)
-	call setbufvar(a:bufnr, '&modified', 0)
+	call setbufvar(a:edbufnr, '&undolevels', old_undolevels)
+	call setbufvar(a:edbufnr, '&modified', 0)
 endfunction
