@@ -38,6 +38,12 @@ mstdn#editor#set_user({user})                          *mstdn#editor#set_user()*
 
         {user}      (string) User string formatted as `[username]@[serveraddr]`.
 
+mstdn#editor#get_statusparams({bufnr})          *mstdn#editor#get_statusparams()*
+
+        Get current CreateStatusParams of the editor.
+
+        {bufnr}     (int) The bufnr of the editor buffer.
+
 ==============================================================================
 VARIABLES                                                    *mstdn-editor-vars*
 

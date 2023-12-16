@@ -1,7 +1,23 @@
 let s:file_prefix = 'mstdn-editor:'
 let s:prefix_len = len(s:file_prefix)
+
 let s:buffer_defaults = {}
 let s:buffer_editing = {}
+
+" get CreateStatusParams
+function mstdn#editor#get_statusparams(edbufnr) abort
+	if !has_key(s:buffer_defaults, '' .. bufnr())
+		throw 'this is not mstdn-editor buffer'
+	endif
+	let text = trim(join(getbufline(a:edbufnr, 1, '$'), "\n"))
+	return extendnew(s:buffer_editing[a:edbufnr], #{status: text})
+endfunction
+
+" update CreateStatusParams
+function s:update_statusparams(edbufnr, obj) abort
+	call extend(s:buffer_editing[a:edbufnr], a:obj)
+	doautocmd User MstdnEditorUpdateParams
+endfunction
 
 " open editor buffer
 function mstdn#editor#open(user, opts = {}) abort
@@ -10,6 +26,7 @@ function mstdn#editor#open(user, opts = {}) abort
 	setl bt=acwrite bufhidden=wipe noswapfile
 	let s:buffer_defaults[bufnr()] = opts.defaults
 	call mstdn#editor#set_user(a:user)
+	doautocmd User MstdnEditorOpen
 
 	" initialize buffer
 	call s:initialize(bufnr())
@@ -31,12 +48,11 @@ endfunction
 
 " send status
 function s:send(edbufnr) abort
-	let text = trim(join(getbufline(a:edbufnr, 1, '$'), "\n"))
-	if text == ''
+	let sp = mstdn#editor#get_statusparams(a:edbufnr)
+	if sp.status == ''
 		throw 'content is empty'
 	endif
-	let s:buffer_editing[a:edbufnr].status = text
-	call mstdn#request#post(strpart(bufname(a:edbufnr), s:prefix_len), s:buffer_editing[a:edbufnr])
+	call mstdn#request#post(strpart(bufname(a:edbufnr), s:prefix_len), sp)
 
 	" re-initialize buffer
 	call s:initialize(a:edbufnr)
