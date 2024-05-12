@@ -5,7 +5,7 @@ let s:buffer_defaults = {}
 let s:buffer_editing = {}
 
 function s:create_virtual_filename(edbufnr, newUser = v:null) abort
-	let username = a:newUser != v:null ? a:newUser : mstdn#editor#get_username(a:edbufnr)
+	let username = a:newUser != v:null ? a:newUser : mstdn#editor#get_user(a:edbufnr)
 	let params = mstdn#editor#get_statusparams(a:edbufnr)
 
 	let f = s:file_prefix .. username
@@ -15,7 +15,8 @@ function s:create_virtual_filename(edbufnr, newUser = v:null) abort
 	return f
 endfunction
 
-function mstdn#editor#get_username(edbufnr = bufnr()) abort
+" get user from buffer
+function mstdn#editor#get_user(edbufnr = bufnr()) abort
 	if !has_key(s:buffer_defaults, '' .. a:edbufnr)
 		throw 'this is not mstdn-editor buffer'
 	endif
@@ -23,6 +24,16 @@ function mstdn#editor#get_username(edbufnr = bufnr()) abort
 	" First ? Get before
 	let username = matchstr(username_and_query, '^\zs[^?]*')
 	return username
+endfunction
+
+" set user to buffer
+function mstdn#editor#set_user(user, edbufnr = bufnr()) abort
+	if index(mstdn#user#login_users(), a:user) < 0
+		throw 'user not found'
+	elseif !has_key(s:buffer_defaults, '' .. a:edbufnr)
+		throw 'this is not mstdn-editor buffer'
+	endif
+	exe 'f ' .. s:create_virtual_filename(a:edbufnr, a:user)
 endfunction
 
 " get CreateStatusParams
@@ -59,23 +70,13 @@ function mstdn#editor#open(user, opts = {}) abort
 	nn <buffer> <esc> <cmd>sil! q<cr>
 endfunction
 
-" set user to buffer
-function mstdn#editor#set_user(user, edbufnr = bufnr()) abort
-	if index(mstdn#user#login_users(), a:user) < 0
-		throw 'user not found'
-	elseif !has_key(s:buffer_defaults, '' .. a:edbufnr)
-		throw 'this is not mstdn-editor buffer'
-	endif
-	exe 'f ' .. s:create_virtual_filename(a:edbufnr, a:user)
-endfunction
-
 " send status
 function s:send(edbufnr) abort
 	let sp = mstdn#editor#get_statusparams(a:edbufnr)
 	if sp.status == ''
 		throw 'content is empty'
 	endif
-	call mstdn#request#post(mstdn#editor#get_username(a:edbufnr), sp)
+	call mstdn#request#post(mstdn#editor#get_user(a:edbufnr), sp)
 
 	" re-initialize buffer
 	call s:initialize(a:edbufnr)

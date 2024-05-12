@@ -18,6 +18,10 @@ KEYBINDINGS                                                  *mstdn-editor-keys*
 
         Open editor window according to the current window.
 
+<Plug>(mstdn-editor-open-reply)                *<Plug>(mstdn-editor-open-reply)*
+
+        Open editor window with the reply to the status under the cursor.
+
 ==============================================================================
 FUNCTIONS                                                   *mstdn-editor-funcs*
 
@@ -32,11 +36,18 @@ mstdn#editor#open({user}, {opts} = {})                     *mstdn#editor#open()*
                         - defaults: (dict) Initialization state of
                           CreateStatusParams to be edited.
 
-mstdn#editor#set_user({user})                          *mstdn#editor#set_user()*
+mstdn#editor#get_user({bufnr})                          *mstdn#editor#get_user()*
+
+        Get editing user of the editor window.
+
+        {bufnr}     (int) The bufnr of the editor buffer.
+
+mstdn#editor#set_user({user}, {bufnr})                  *mstdn#editor#set_user()*
 
         Change editing user of the current editor window.
 
         {user}      (string) User string formatted as `[username]@[serveraddr]`.
+        {bufnr}     (int) The bufnr of the editor buffer.
 
 mstdn#editor#get_statusparams({bufnr})          *mstdn#editor#get_statusparams()*
 
