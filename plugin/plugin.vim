@@ -1,4 +1,6 @@
 nor <Plug>(mstdn-editor-open) <cmd>call mstdn#editor#open(<SID>get_user(), #{defaults: mstdn#timeline#status_defaults()})<cr>
+nor <Plug>(mstdn-editor-open-reply) <cmd>call mstdn#editor#open(<SID>get_user(), #{defaults: <SID>status_defaults_reply()})<cr>
+
 let g:mstdn_editor_opener = '4new'
 let g:mstdn_editor_defaultuser = v:null
 function s:get_user() abort
@@ -10,4 +12,12 @@ function s:get_user() abort
 		endi
 		retu mstdn#user#login_users()[0]
 	endt
+endfunction
+
+function s:status_defaults_reply() abort
+	let status = mstdn#timeline#status()
+	let id = status['id']
+	let acct = status['account']['acct']
+
+	return #{in_reply_to_id: id, status: " @". acct}
 endfunction

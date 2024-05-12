@@ -4,9 +4,30 @@ let s:prefix_len = len(s:file_prefix)
 let s:buffer_defaults = {}
 let s:buffer_editing = {}
 
+function s:create_virtual_filename(edbufnr, newUser = v:null) abort
+	let username = a:newUser != v:null ? a:newUser : mstdn#editor#get_username(a:edbufnr)
+	let params = mstdn#editor#get_statusparams(a:edbufnr)
+
+	let f = s:file_prefix .. username
+	if has_key(params, 'in_reply_to_id')
+		let f .= '?in_reply_to_id=' .. params.in_reply_to_id
+	endif
+	return f
+endfunction
+
+function mstdn#editor#get_username(edbufnr = bufnr()) abort
+	if !has_key(s:buffer_defaults, '' .. a:edbufnr)
+		throw 'this is not mstdn-editor buffer'
+	endif
+	let username_and_query = strpart(bufname(a:edbufnr), s:prefix_len)
+	" First ? Get before
+	let username = matchstr(username_and_query, '^\zs[^?]*')
+	return username
+endfunction
+
 " get CreateStatusParams
-function mstdn#editor#get_statusparams(edbufnr) abort
-	if !has_key(s:buffer_defaults, '' .. bufnr())
+function mstdn#editor#get_statusparams(edbufnr = bufnr()) abort
+	if !has_key(s:buffer_defaults, '' .. a:edbufnr)
 		throw 'this is not mstdn-editor buffer'
 	endif
 	let text = trim(join(getbufline(a:edbufnr, 1, '$'), "\n"))
@@ -14,8 +35,9 @@ function mstdn#editor#get_statusparams(edbufnr) abort
 endfunction
 
 " update CreateStatusParams
-function s:update_statusparams(edbufnr, obj) abort
+function mstdn#editor#update_statusparams(obj, edbufnr = bufnr()) abort
 	call extend(s:buffer_editing[a:edbufnr], a:obj)
+	exe 'f ' .. s:create_virtual_filename(a:edbufnr)
 	doautocmd User MstdnEditorUpdateParams
 endfunction
 
@@ -25,6 +47,7 @@ function mstdn#editor#open(user, opts = {}) abort
 	exe opts.opener
 	setl bt=acwrite bufhidden=wipe noswapfile
 	let s:buffer_defaults[bufnr()] = opts.defaults
+	let s:buffer_editing[bufnr()] = opts.defaults
 	call mstdn#editor#set_user(a:user)
 	doautocmd User MstdnEditorOpen
 
@@ -37,13 +60,13 @@ function mstdn#editor#open(user, opts = {}) abort
 endfunction
 
 " set user to buffer
-function mstdn#editor#set_user(user) abort
+function mstdn#editor#set_user(user, edbufnr = bufnr()) abort
 	if index(mstdn#user#login_users(), a:user) < 0
 		throw 'user not found'
-	elseif !has_key(s:buffer_defaults, '' .. bufnr())
+	elseif !has_key(s:buffer_defaults, '' .. a:edbufnr)
 		throw 'this is not mstdn-editor buffer'
 	endif
-	exe 'f ' .. s:file_prefix .. a:user
+	exe 'f ' .. s:create_virtual_filename(a:edbufnr, a:user)
 endfunction
 
 " send status
@@ -52,7 +75,7 @@ function s:send(edbufnr) abort
 	if sp.status == ''
 		throw 'content is empty'
 	endif
-	call mstdn#request#post(strpart(bufname(a:edbufnr), s:prefix_len), sp)
+	call mstdn#request#post(mstdn#editor#get_username(a:edbufnr), sp)
 
 	" re-initialize buffer
 	call s:initialize(a:edbufnr)
