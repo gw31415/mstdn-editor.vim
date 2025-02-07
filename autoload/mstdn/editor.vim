@@ -55,7 +55,7 @@ endfunction
 function mstdn#editor#open(user, opts = {}) abort
 	let opts = extend(#{opener: g:mstdn_editor_opener, defaults: {}}, a:opts)
 	exe opts.opener
-	setl bt=acwrite bufhidden=wipe noswapfile
+	setl bt=acwrite bufhidden=wipe noswapfile ft=mstdn-editor
 	let s:buffer_defaults[bufnr()] = opts.defaults
 	let s:buffer_editing[bufnr()] = opts.defaults
 	call mstdn#editor#set_user(a:user)
