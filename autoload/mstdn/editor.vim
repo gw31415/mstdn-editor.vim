@@ -49,7 +49,6 @@ endfunction
 function mstdn#editor#update_statusparams(obj, edbufnr = bufnr()) abort
 	call extend(s:buffer_editing[a:edbufnr], a:obj)
 	exe 'f ' .. s:create_virtual_filename(a:edbufnr)
-	doautocmd User MstdnEditorUpdateParams
 endfunction
 
 " open editor buffer
@@ -60,7 +59,6 @@ function mstdn#editor#open(user, opts = {}) abort
 	let s:buffer_defaults[bufnr()] = opts.defaults
 	let s:buffer_editing[bufnr()] = opts.defaults
 	call mstdn#editor#set_user(a:user)
-	doautocmd User MstdnEditorOpen
 
 	" initialize buffer
 	call s:initialize(bufnr())
