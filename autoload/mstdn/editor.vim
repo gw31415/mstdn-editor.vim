@@ -8,11 +8,14 @@ function s:create_virtual_filename(edbufnr, newUser = v:null) abort
 	let username = a:newUser != v:null ? a:newUser : mstdn#editor#get_user(a:edbufnr)
 	let params = mstdn#editor#get_statusparams(a:edbufnr)
 
-	let f = s:file_prefix .. username
+	let f = s:file_prefix .. username .. '?'
 	if has_key(params, 'in_reply_to_id')
-		let f .= '?in_reply_to_id=' .. params.in_reply_to_id
+		let f .= 'in_reply_to_id=' .. params.in_reply_to_id .. '&'
 	endif
-	return f
+	if has_key(params, 'media_ids')
+		let f .= 'media_ids=[' .. len(params.media_ids) .. ']&'
+	endif
+	return f[:-2]
 endfunction
 
 " get user from buffer
